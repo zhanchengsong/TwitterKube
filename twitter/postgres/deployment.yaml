@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: twitter-postgres #name of our deployments
+  labels:
+    app: postgres
+spec:
+  selector:
+    matchLabels:
+      app: postgres 
+  replicas: 1 
+  template:
+    metadata:
+      labels:
+        app: postgres # our postgres container label
+    spec:
+      containers:
+        - name: twitter-postgres
+          image: postgres:latest
+          ports:
+            - containerPort: 5432 # expose container port
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: twitter-secret
+                  key: PG_PASSWORD
+            - name: POSTGRES_DB
+              value: TwitterUser
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data # mount point of do pv
+              name: my-postgres-volume # name of our mount point pv
+              subPath: postgres
+      volumes:
+        - name: my-postgres-volume
+          persistentVolumeClaim:
+            claimName: postgres-pvc # name of pv created in pvc.yam

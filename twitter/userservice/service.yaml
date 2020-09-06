@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: twitter-userservice-svc
+  labels:
+    app: userservice
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3005
+  selector:
+    app: userservice

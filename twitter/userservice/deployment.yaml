@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: twitter-userservice #name of our deployments
+  labels:
+    app: userservice
+spec:
+  selector:
+    matchLabels:
+      app: userservice
+  replicas: 2 
+  template:
+    metadata:
+      labels:
+        app: userservice 
+    spec:
+      containers:
+        - name: twitter-userservice
+          image: zhanchengdev/userservice:latest
+          ports:
+            - containerPort: 3005 # expose container port
+          env:
+            - name: PG_USERNAME
+              value: postgres
+            - name: PG_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: twitter-secret
+                  key: PG_PASSWORD
+            - name: PG_DBNAME
+              value: TwitterUser
+            - name: DB_TYPE
+              value: postgres
+            - name: DB_HOST
+              value: twitter-postgres-svc
+            - name: DB_PORT
+              value: '5432'
+            - name: JWT_SECRET
+              valueFrom: 
+                secretKeyRef:
+                  name: twitter-secret
+                  key: JWT_SECRET
+            - name: SERVER_PORT
+              value: '3005'
+            - name: AWS_REGION
+              value: us-east-1
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom: 
+                secretKeyRef:
+                  name: twitter-secret
+                  key: GO_AWS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: twitter-secret
+                  key: GO_AWS_ACCESS_KEY
+            - name: AWS_USER_ICON_BUCKET
+              value: twitter-icons

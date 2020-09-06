@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: twitter-web #name of our deployments
+  labels:
+    app: twitter-web
+spec:
+  selector:
+    matchLabels:
+      app: twitter-web
+  replicas: 1 
+  template:
+    metadata:
+      labels:
+        app: twitter-web
+    spec:
+      containers:
+        - name: twitter-web
+          image: zhanchengdev/twitter-web:latest
+          ports:
+            - containerPort: 3001 # expose container port
+          env:
+            - name: NODE_PORT
+              value: '3001'
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: twitter-secret
+                  key: NODE_AWS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: twitter-secret
+                  key: NODE_AWS_ACCESS_KEY
+            - name: AWS_REGION
+              value: us-east-1
+            - name: AWS_USER_ICON_BUCKET
+              value: twitter-icons
+            - name: REDIS_HOST
+              value: twitter-redis-svc
+            - name: REDIS_PORT
+              value: '6379'
+          imagePullPolicy: Always

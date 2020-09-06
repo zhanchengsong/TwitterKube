@@ -1,0 +1,34 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: hello-kubernetes-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+spec:
+  tls:
+  - hosts:
+    - hw1.zhancheng.dev
+    - hw2.zhancheng.dev
+    - twitter.zhancheng.dev
+    secretName: hello-kubernetes-tls
+  rules:
+  - host: hw1.zhancheng.dev
+    http:
+      paths:
+      - backend:
+          serviceName: hello-kubernetes-first
+          servicePort: 80
+  - host: hw2.zhancheng.dev
+    http:
+      paths:
+      - backend:
+          serviceName: hello-kubernetes-second
+          servicePort: 80
+  - host: twitter.zhancheng.dev
+    http:
+      paths:
+      - backend:
+          serviceName: twitter-nginx-svc
+          servicePort: 80

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: twitter-web-svc
+  labels:
+    app: twitter-web
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3001
+  selector:
+    app: twitter-web
